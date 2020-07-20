@@ -1,9 +1,9 @@
 {
-    "name": "jpenaroche/omnipay-mercadopago",
+    "name": "jpenaroche/omnipay-pagosweb",
     "type": "library",
-    "description": "MercadoPago gateway for OmniPay and OctoberCMS - Shopaholic",
+    "description": "PagosWeb gateway for OmniPay and OctoberCMS - Shopaholic",
     "keywords": [
-        "mercadopago",
+        "pagosweb",
         "mp",
         "gateway",
         "merchant",
@@ -19,10 +19,14 @@
         {
             "name": "José A. Peñarroche Delgado",
             "email": "jpenaroche@gmail.com"
+        },
+        {
+            "name": "Marlon Freire Gómez",
+            "email": "marlonfg91@gmail.com"
         }
     ],
     "autoload": {
-        "psr-4": { "Omnipay\\MercadoPago\\" : "src/" }
+        "psr-4": { "Omnipay\\PagosWeb\\" : "src/" }
     },
     "require": {
         "omnipay/common": "~2.0"
