@@ -1,31 +1,34 @@
 <?php
 
-namespace Omnipay\MercadoPago\Message;
+namespace Omnipay\PagosWeb\Message;
 
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\MercadoPago\Gateway;
+use Omnipay\PagosWeb\Gateway;
 
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-    protected $liveEndpoint = 'https://api.mercadopago.com';
-    protected $testEndpoint = 'https://api.mercadopago.com';
+    const API_VERSION = 'v1';
+
+    protected $liveEndpoint = 'https://api.siemprepago.com/';
+    protected $testEndpoint = 'https://testapi.siemprepago.com/';
 
     public function sendData($data)
     {
         if ($this->getTestMode())
             $this->validate('test_access_token');
         else
-            $this->validate('client_id', 'client_secret');
+            $this->validate('public_account_key', 'private_account_key');
 
-        $token = $this->getTestMode() ? $this->getTestAccessToken() : $this->getAccessToken();
+//        $token = $this->getTestMode() ? $this->getTestAccessToken() : $this->getAccessToken();
 
-        $url = $this->getEndpoint() . '?access_token=' . $token;
+        $url = $this->getEndpoint() .static::API_VERSION.'/api/purchase';
 
-        //Llamo a pedir la preferencia de mercadopago
+        //Llamo a pedir la preferencia de pagosweb
         $httpRequest = $this->httpClient->createRequest(
             'POST',
             $url,
             array(
+                'Authorization' => 'Basic '.$this->getPrivateAccountKey(),
                 'Content-type' => 'application/json',
             ),
             $this->toJSON($data)
@@ -64,24 +67,24 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $this->getParameter('test_access_token');
     }
 
-    public function getClientId()
+    public function getPublicAccountKey()
     {
-        return $this->getParameter('client_id');
+        return $this->getParameter('public_account_key');
     }
 
-    public function setClientId($value)
+    public function setPublicAccountKey($value)
     {
-        return $this->setParameter('client_id', $value);
+        return $this->setParameter('public_account_key', $value);
     }
 
-    public function getClientSecret()
+    public function getPrivateAccountKey()
     {
-        return $this->getParameter('client_secret');
+        return $this->getParameter('private_account_key');
     }
 
-    public function setClientSecret($value)
+    public function setPrivateAccountKey($value)
     {
-        return $this->setParameter('client_secret', $value);
+        return $this->setParameter('private_account_key', $value);
     }
 
     protected function getEndpoint()

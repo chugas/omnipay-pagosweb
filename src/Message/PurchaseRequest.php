@@ -1,37 +1,57 @@
 <?php
 
-namespace Omnipay\MercadoPago\Message;
+namespace Omnipay\PagosWeb\Message;
 
 class PurchaseRequest extends AbstractRequest
 {
-    public function getItemData()
+    public function getCustomerData()
     {
-        // This is for a single item offer gathered from shopaholic
-        $items = [];
-        $properties['title'] = 'Orden Nro. '.$this->getDescription();
-        $properties['quantity'] = 1;
-        $properties['currency_id'] = $this->getCurrency();
-        $properties['unit_price'] = (double)($this->formatCurrency($this->getAmount()));
-        $items [] = $properties;
-        return $items;
+        // Datos del cliente
+        $customer = [
+            'FirstName' => $this->getCard()->getFirstName(),
+            'LastName' => $this->getCard()->getLastName(),
+            'Email' => $this->getCard()->getEmail(),
+            'PhoneNumber' => $this->getCard()->getPhone(),
+            'ShippingAddress'   => [
+                'Country'   => $this->getCard()->getShippingCountry(),
+                'State'   => $this->getCard()->getShippingState(),
+                'City'   => $this->getCard()->getShippingCity(),
+                'AddressDetail'   => $this->getCard()->getShippingAddress1()
+            ],
+            'BillingAddress'   => [
+                'Country'   => $this->getCard()->getBillingCountry(),
+                'State'   => $this->getCard()->getBillingState(),
+                'City'   => $this->getCard()->getBillingCity(),
+                'AddressDetail'   => $this->getCard()->getBillingAddress1()
+            ],
+            'DocumentTypeId'    => '',
+            'DocNumber' =>  ''
+        ];
+
+        return $customer;
+    }
+
+    public function getDataUY()
+    {
+        // Datos de facturacion
+        $data = [
+            'IsFinalConsumer'   => 'false',
+            'Invoice'   =>  '',
+            'TaxableAmount' =>  0
+        ];
+
+        return $data;
     }
 
     public function getData()
     {
         $purchaseObject = [
-            'items'              => $this->getItemData(),
-            'auto_return'        => 'approved',
-            'back_urls'          => [
-                'success' => $this->getReturnUrl(),
-                'pending' => $this->getReturnUrl(),
-                'failure' => $this->getCancelUrl(),
-            ],
-            /* 'payment_methods'    => [
-                'excluded_payment_types' => [
-                    ["id" => "ticket"],
-                    ["id" => "atm"]
-                ]
-            ] */
+            'TrxToken'  =>  $this->getAccessToken(),
+            'Order'     =>  '',
+            'Amount'    =>  (double)($this->formatCurrency($this->getAmount())),
+            'Currency'  =>  $this->getCurrency(),
+            'Customer'  =>  $this->getCustomerData(),
+            'DataUY'    =>  $this->getDataUY()
         ];
         return $purchaseObject;
 

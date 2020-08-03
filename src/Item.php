@@ -1,6 +1,6 @@
 <?php
 
-namespace Omnipay\MercadoPago;
+namespace Omnipay\PagosWeb;
 
 use Omnipay\Common\Item as BaseItem;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Omnipay\MercadoPago;
+namespace Omnipay\PagosWeb;
 
 use Omnipay\Common\AbstractGateway;
 
@@ -8,38 +8,38 @@ class Gateway extends AbstractGateway
 {
     public function getName()
     {
-        return 'MercadoPago';
+        return 'PagosWeb';
     }
 
     public function getDefaultParameters()
     {
         return array(
-            'client_id' => '',
-            'client_secret' => '',
+            'public_account_key' => '',
+            'private_account_key' => '',
             'access_token' => '',
             'test_access_token' => '',
             'testMode' => false,
         );
     }
 
-    public function getClientId()
+    public function getPublicAccountKey()
     {
-        return $this->getParameter('client_id');
+        return $this->getParameter('public_account_key');
     }
 
-    public function setClientId($value)
+    public function setPublicAccountKey($value)
     {
-        return $this->setParameter('client_id', $value);
+        return $this->setParameter('public_account_key', $value);
     }
 
-    public function getClientSecret()
+    public function getPrivateAccountKey()
     {
-        return $this->getParameter('client_secret');
+        return $this->getParameter('private_account_key');
     }
 
-    public function setClientSecret($value)
+    public function setPrivateAccountKey($value)
     {
-        return $this->setParameter('client_secret', $value);
+        return $this->setParameter('private_account_key', $value);
     }
 
     public function setAmount($value)
@@ -104,11 +104,11 @@ class Gateway extends AbstractGateway
 
     public function purchase(array $parameters = array())
     {
-        return $this->createRequest('\Omnipay\MercadoPago\Message\PurchaseRequest', $parameters);
+        return $this->createRequest('\Omnipay\PagosWeb\Message\PurchaseRequest', $parameters);
     }
 
     public function requestToken(array $parameters = array())
     {
-        return $this->createRequest('\Omnipay\MercadoPago\Message\TokenRequest', $parameters);
+        return $this->createRequest('\Omnipay\PagosWeb\Message\TokenRequest', $parameters);
     }
 }
