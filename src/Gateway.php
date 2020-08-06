@@ -16,8 +16,6 @@ class Gateway extends AbstractGateway
         return array(
             'public_account_key' => '',
             'private_account_key' => '',
-            'access_token' => '',
-            'test_access_token' => '',
             'testMode' => false,
         );
     }

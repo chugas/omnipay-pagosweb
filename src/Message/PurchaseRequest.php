@@ -23,9 +23,7 @@ class PurchaseRequest extends AbstractRequest
                 'State'   => $this->getCard()->getBillingState(),
                 'City'   => $this->getCard()->getBillingCity(),
                 'AddressDetail'   => $this->getCard()->getBillingAddress1()
-            ],
-            'DocumentTypeId'    => '',
-            'DocNumber' =>  ''
+            ]
         ];
 
         return $customer;
@@ -46,7 +44,7 @@ class PurchaseRequest extends AbstractRequest
     public function getData()
     {
         $purchaseObject = [
-            'TrxToken'  =>  $this->getAccessToken(),
+            'TrxToken'  =>  $this->getToken(),
             'Order'     =>  '',
             'Amount'    =>  (double)($this->formatCurrency($this->getAmount())),
             'Currency'  =>  $this->getCurrency(),

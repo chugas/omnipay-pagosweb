@@ -7,21 +7,15 @@ use Omnipay\PagosWeb\Gateway;
 
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-    const API_VERSION = 'v1';
-
-    protected $liveEndpoint = 'https://api.siemprepago.com/';
-    protected $testEndpoint = 'https://testapi.siemprepago.com/';
+    protected $liveEndpoint = 'https://api.siemprepago.com/v1/api/purchase';
+    protected $testEndpoint = 'https://testapi.siemprepago.com/v1/api/purchase';
 
     public function sendData($data)
     {
-        if ($this->getTestMode())
-            $this->validate('test_access_token');
-        else
-            $this->validate('public_account_key', 'private_account_key');
 
-//        $token = $this->getTestMode() ? $this->getTestAccessToken() : $this->getAccessToken();
+        $this->validate('private_account_key');
 
-        $url = $this->getEndpoint() .static::API_VERSION.'/api/purchase';
+        $url = $this->getEndpoint();
 
         //Llamo a pedir la preferencia de pagosweb
         $httpRequest = $this->httpClient->createRequest(
@@ -39,32 +33,15 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $this->createResponse((object) $httpResponse->json());
     }
 
-    public function setAccessToken($value)
+    public function setToken($value)
     {
-        return $this->setParameter('access_token', $value);
+        return $this->setParameter('PWToken', $value);
     }
 
-    public function getAccessToken()
+    public function getToken()
     {
-        //Si esta en la configuracion del plugin el access_token, lo traigo
-        $access_token = $this->getParameter('access_token');
-        if ($access_token)
-            return $access_token;
+        return $this->getParameter('PWToken');
 
-        //Si no esta el parametro pues lo solicito a mercadopago
-        $token_response = (new Gateway())->requestToken($this->getParameters());
-        $params = $token_response->getData();
-        return $token_response->sendData($params)->getData()->access_token;
-    }
-
-    public function setTestAccessToken($value)
-    {
-        return $this->setParameter('test_access_token', $value);
-    }
-
-    public function getTestAccessToken()
-    {
-        return $this->getParameter('test_access_token');
     }
 
     public function getPublicAccountKey()
