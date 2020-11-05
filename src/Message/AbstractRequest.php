@@ -1,31 +1,28 @@
 <?php
 
-namespace Omnipay\MercadoPago\Message;
+namespace Omnipay\PagosWeb\Message;
 
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\MercadoPago\Gateway;
+use Omnipay\PagosWeb\Gateway;
 
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-    protected $liveEndpoint = 'https://api.mercadopago.com';
-    protected $testEndpoint = 'https://api.mercadopago.com';
+    protected $liveEndpoint = 'https://api.siemprepago.com/v1/api/purchase';
+    protected $testEndpoint = 'https://testapi.siemprepago.com/v1/api/purchase';
 
     public function sendData($data)
     {
-        if ($this->getTestMode())
-            $this->validate('test_access_token');
-        else
-            $this->validate('client_id', 'client_secret');
 
-        $token = $this->getTestMode() ? $this->getTestAccessToken() : $this->getAccessToken();
+        $this->validate('private_account_key');
 
-        $url = $this->getEndpoint() . '?access_token=' . $token;
+        $url = $this->getEndpoint();
 
-        //Llamo a pedir la preferencia de mercadopago
+        //Llamo a pedir la preferencia de pagosweb
         $httpRequest = $this->httpClient->createRequest(
             'POST',
             $url,
             array(
+                'Authorization' => 'Basic '.$this->getPrivateAccountKey(),
                 'Content-type' => 'application/json',
             ),
             $this->toJSON($data)
@@ -36,52 +33,35 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $this->createResponse((object) $httpResponse->json());
     }
 
-    public function setAccessToken($value)
+    public function setToken($value)
     {
-        return $this->setParameter('access_token', $value);
+        return $this->setParameter('PWToken', $value);
     }
 
-    public function getAccessToken()
+    public function getToken()
     {
-        //Si esta en la configuracion del plugin el access_token, lo traigo
-        $access_token = $this->getParameter('access_token');
-        if ($access_token)
-            return $access_token;
+        return $this->getParameter('PWToken');
 
-        //Si no esta el parametro pues lo solicito a mercadopago
-        $token_response = (new Gateway())->requestToken($this->getParameters());
-        $params = $token_response->getData();
-        return $token_response->sendData($params)->getData()->access_token;
     }
 
-    public function setTestAccessToken($value)
+    public function getPublicAccountKey()
     {
-        return $this->setParameter('test_access_token', $value);
+        return $this->getParameter('public_account_key');
     }
 
-    public function getTestAccessToken()
+    public function setPublicAccountKey($value)
     {
-        return $this->getParameter('test_access_token');
+        return $this->setParameter('public_account_key', $value);
     }
 
-    public function getClientId()
+    public function getPrivateAccountKey()
     {
-        return $this->getParameter('client_id');
+        return $this->getParameter('private_account_key');
     }
 
-    public function setClientId($value)
+    public function setPrivateAccountKey($value)
     {
-        return $this->setParameter('client_id', $value);
-    }
-
-    public function getClientSecret()
-    {
-        return $this->getParameter('client_secret');
-    }
-
-    public function setClientSecret($value)
-    {
-        return $this->setParameter('client_secret', $value);
+        return $this->setParameter('private_account_key', $value);
     }
 
     protected function getEndpoint()

@@ -1,6 +1,6 @@
 <?php
 
-namespace Omnipay\MercadoPago\Message;
+namespace Omnipay\PagosWeb\Message;
 
 class TokenRequest extends AbstractRequest
 {

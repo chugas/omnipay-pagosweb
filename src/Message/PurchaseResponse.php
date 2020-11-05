@@ -1,6 +1,6 @@
 <?php
 
-namespace Omnipay\MercadoPago\Message;
+namespace Omnipay\PagosWeb\Message;
 
 use Omnipay\Common\Message\AbstractResponse;
 
