@@ -4,6 +4,9 @@ namespace Omnipay\PagosWeb\Message;
 
 class PurchaseRequest extends AbstractRequest
 {
+    public $docNumber;
+    public $documentTypeId;
+    
     public function getCustomerData()
     {
         // Datos del cliente
@@ -12,6 +15,8 @@ class PurchaseRequest extends AbstractRequest
             'LastName' => $this->getCard()->getLastName(),
             'Email' => $this->getCard()->getEmail(),
             'PhoneNumber' => $this->getCard()->getPhone(),
+            'DocNumber' => $this->docNumber,
+            'DocumentTypeId' => $this->documentTypeId,
             'ShippingAddress'   => [
                 'Country'   => $this->getCard()->getShippingCountry(),
                 'State'   => $this->getCard()->getShippingState(),
@@ -27,6 +32,12 @@ class PurchaseRequest extends AbstractRequest
         ];
 
         return $customer;
+    }
+
+    public function setExtraData($parameters)
+    {
+        $this->docNumber = $parameters['DocNumber'];
+        $this->documentTypeId = $parameters['DocumentTypeId'];
     }
 
     public function getDataUY()
