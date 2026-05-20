@@ -18,7 +18,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $url = $this->getEndpoint();
 
         //Llamo a pedir la preferencia de pagosweb
-        $httpRequest = $this->httpClient->createRequest(
+        $httpResponse = $this->httpClient->request(
             'POST',
             $url,
             array(
@@ -29,8 +29,9 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         );
 
         // Obtengo la preferencia
-        $httpResponse = $httpRequest->send();
-        return $this->createResponse((object) $httpResponse->json());
+        $body = (string) $httpResponse->getBody();
+        $decoded = json_decode($body);
+        return $this->createResponse((object) $decoded);
     }
 
     public function setToken($value)
@@ -77,9 +78,19 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return str_replace('\\/', '/', json_encode($data, $options));
     }
 
-    public function validate()
+    public function getExtraData()
     {
-        foreach (func_get_args() as $key) {
+        return $this->getParameter('ExtraData');
+    }
+
+    public function setExtraData($value)
+    {
+        return $this->setParameter('ExtraData', $value);
+    }
+
+    public function validate(...$args)
+    {
+        foreach ($args as $key) {
             $value = $this->parameters->get($key);
             if (!isset($value) || $value === '') {
                 throw new InvalidRequestException("The $key parameter is required");

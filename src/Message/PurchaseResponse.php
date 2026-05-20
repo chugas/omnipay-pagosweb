@@ -8,7 +8,15 @@ class PurchaseResponse extends AbstractResponse
 {
     public function isSuccessful()
     {
-        return isset($this->data->init_point) && $this->data->init_point;
+        return isset($this->data->Response) && !empty($this->data->Response->PurchaseId) && empty($this->data->Errors);
+    }
+
+    public function getMessage()
+    {
+        if (isset($this->data->Errors) && is_array($this->data->Errors) && count($this->data->Errors) > 0) {
+            return $this->data->Errors[0]->Message ?? 'Error desconocido de la pasarela';
+        }
+        return parent::getMessage();
     }
 
     /**
