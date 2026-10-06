@@ -6,12 +6,18 @@ class PurchaseRequest extends AbstractRequest
 {
     public function getCustomerData()
     {
+        $extraData = $this->getExtraData();
+        $docNumber = isset($extraData['DocNumber']) ? $extraData['DocNumber'] : null;
+        $documentTypeId = isset($extraData['DocumentTypeId']) ? $extraData['DocumentTypeId'] : null;
+
         // Datos del cliente
         $customer = [
             'FirstName' => $this->getCard()->getFirstName(),
             'LastName' => $this->getCard()->getLastName(),
             'Email' => $this->getCard()->getEmail(),
             'PhoneNumber' => $this->getCard()->getPhone(),
+            'DocNumber' => $docNumber,
+            'DocumentTypeId' => $documentTypeId,
             'ShippingAddress'   => [
                 'Country'   => $this->getCard()->getShippingCountry(),
                 'State'   => $this->getCard()->getShippingState(),
@@ -43,13 +49,22 @@ class PurchaseRequest extends AbstractRequest
 
     public function getData()
     {
+        $extraData = $this->getExtraData();
+        $order = isset($extraData['OrderId']) ? (string)$extraData['OrderId'] : '';
+        $installments = isset($extraData['Installments']) ? (int)$extraData['Installments'] : 1;
+
+        $targetCountryISO = isset($extraData['TargetCountryISO']) ? $extraData['TargetCountryISO'] : 'UY';
+
         $purchaseObject = [
-            'TrxToken'  =>  $this->getToken(),
-            'Order'     =>  '',
-            'Amount'    =>  (double)($this->formatCurrency($this->getAmount())),
-            'Currency'  =>  $this->getCurrency(),
-            'Customer'  =>  $this->getCustomerData(),
-            'DataUY'    =>  $this->getDataUY()
+            'TrxToken'          => $this->getToken(),
+            'Order'             => $order,
+            'Installments'      => $installments,
+            'Capture'           => true,
+            'TargetCountryISO'  => $targetCountryISO,
+            'Amount'            => (double)($this->formatCurrency($this->getAmount())),
+            'Currency'          => $this->getCurrency(),
+            'Customer'          => $this->getCustomerData(),
+            'DataUY'            => $this->getDataUY()
         ];
         return $purchaseObject;
 
@@ -64,7 +79,4 @@ class PurchaseRequest extends AbstractRequest
     {
         return $this->getTestMode() ? $this->testEndpoint : $this->liveEndpoint;
     }
-
 }
-
-?>
